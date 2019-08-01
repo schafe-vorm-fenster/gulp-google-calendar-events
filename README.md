@@ -1,7 +1,10 @@
 # gulp-google-calendar-events
+
 Gulp plugin to load upcoming google calendar events by using the service api.
 
 ## Install
+
+[![npm](https://nodei.co/npm/gulp-google-calendar-events.svg?downloads=true)](https://nodei.co/npm/gulp-google-calendar-events/)
 
 ```sh
 npm install --save-dev gulp-google-calendar-events
