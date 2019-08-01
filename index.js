@@ -12,15 +12,12 @@ const {JWT} = require('google-auth-library')
 
 module.exports = function(credentials) {
 
-  var cid
-  var jsonevents = {}
-
   if (!credentials || !credentials.private_key_id) {
     this.emit('error', new PluginError(PLUGIN_NAME, 'Missing credentials.'))
     return cb()
   }
 
-  function getEvents(file, enc, cb) {
+  function get(file, enc, cb) {
 
     // set scope to rad calender events
     const scopes = ['https://www.googleapis.com/auth/calendar.readonly']
@@ -42,7 +39,7 @@ module.exports = function(credentials) {
     }
 
     // get the calendar id from incoming JSON file
-    cid = cal.id
+    const cid = cal.id
     log.info('Got calendar id ' + cid)
 
     // init calendar api incl. auth by JWT for a server-to-server usage
@@ -68,40 +65,28 @@ module.exports = function(credentials) {
         }
         const events = res.data.items;
         if (events.length) {
-          jsonevents = events;
+          // Stream out the JSON event list to be used by additional GulpJS tasks.
+          log.info('Stream events of calendar ' + cid)
+
+          // set default filename to the calendar id
+          var filename = cid + '.json'
+          var opts = {
+            // set a subfolder events
+            path: path.resolve('events', filename)
+          }
+          var file = new File(opts)
+
+          // finally stream the json
+          file.contents = new Buffer.from(JSON.stringify(events))
+          return cb(null, file)
         } else {
           log.info('No upcoming events found for calendar ' + cid)
+          return cb()
         }
-        return cb()
+        
     })
 
   }
 
-
-  /**
-    Stream out the JSON event list to be used by additional GulpJS tasks.
-  */
-  function stream(cb) {
-    if (!jsonevents) {
-      this.emit('error', new PluginError(PLUGIN_NAME, 'No events found to stream.'))
-      return cb()
-    }
-
-    log.info('Stream events of calendar ' + cid)
-
-    // set default filename to the calendar id
-    var filename = cid + '.json'
-    var opts = {
-      // set a subfolder events
-      path: path.resolve('events', filename)
-    }
-    var file = new File(opts)
-
-    // finally stream the json
-    file.contents = new Buffer.from(JSON.stringify(jsonevents))
-    return cb(null, file)
-  }
-
-
-  return through.obj(getEvents,stream)
+  return through.obj(get)
 };
