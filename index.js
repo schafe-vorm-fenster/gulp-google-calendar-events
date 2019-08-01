@@ -12,7 +12,7 @@ const {JWT} = require('google-auth-library')
 
 module.exports = function(credentials) {
 
-  if (!credentials || !credentials.private_key_id) {
+  if (!credentials || !credentials.private_key || !credentials.client_email) {
     this.emit('error', new PluginError(PLUGIN_NAME, 'Missing credentials.'))
     return cb()
   }
