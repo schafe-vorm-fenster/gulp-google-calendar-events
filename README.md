@@ -59,3 +59,41 @@ Default location is a subfolder "events" of the incoming calender config folder.
 ```
 .pipe(gulp.dest('_json/'))
 ```
+
+## Env
+
+To securely store the API access data, it can be passed from environment:
+
+```
+#!/bin/sh
+
+echo "set GOOGLEAPI_PRIVATE_KEY"
+GOOGLEAPI_PRIVATE_KEY='-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n'
+export GOOGLEAPI_PRIVATE_KEY
+echo $GOOGLEAPI_PRIVATE_KEY
+
+echo "set GOOGLEAPI_CLIENT_EMAIL"
+GOOGLEAPI_CLIENT_EMAIL='kalenderdatenimport@schafe-vorm-fenster.iam.gserviceaccount.com'
+export GOOGLEAPI_CLIENT_EMAIL
+echo $GOOGLEAPI_CLIENT_EMAIL
+```
+
+So it can be accessed via dotenv and you are able to create the credential json as const within your task file:
+
+```
+const gulp = require('gulp')
+const googleevents = require('gulp-google-calendar-events/index.js')
+require('dotenv').config()
+
+const credentials = {
+	"private_key": JSON.parse(`"${process.env.GOOGLEAPI_PRIVATE_KEY}"`),
+	"client_email": process.env.GOOGLEAPI_CLIENT_EMAIL
+}
+
+gulp.task('events:get', function() {
+	return gulp.src('_json/calendars/**/*.json')
+	.pipe(googleevents(credentials))
+	.pipe(gulp.dest('_json/'))
+});
+```
+
