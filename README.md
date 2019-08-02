@@ -44,21 +44,10 @@ Example:
 
 ## Result
 
-The plugin results the upcoming events in JSON like received from Google API. See [Events: list](https://developers.google.com/calendar/v3/reference/events/list).
+The plugin streams out the upcoming events in JSON like received from Google API. See [Events: list](https://developers.google.com/calendar/v3/reference/events/list). Every events will be streamed as a single file.
 
-Default name of the JSON file is the calendar id with ".json", e.g. ```schafe-vorm-fenster.de_54lmd2pl6r0b5fqngf54sbuofk@group.calendar.google.com.json```.
-
-Customise the name by 
-
-```
-.pipe(rename("events.json"))
-```
-
-Default location is a subfolder "events" of the incoming calender config folder. Customise the folder by 
-
-```
-.pipe(gulp.dest('_json/'))
-```
+By default events are stroed within a folder "events" and a subfolder named by the calendar id.
+The name of the event JSON file is the event id with ".json".
 
 ## Env
 

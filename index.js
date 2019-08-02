@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const PLUGIN_NAME = 'gulp-google-calendar-events'
 
@@ -27,7 +27,7 @@ module.exports = function(credentials) {
       return cb()
     }
 
-    const cal = JSON.parse(file.contents.toString());
+    const cal = JSON.parse(file.contents.toString())
     if (!cal) {
       this.emit('error', new PluginError(PLUGIN_NAME, 'Invalid calender information.'))
       return cb()
@@ -48,7 +48,7 @@ module.exports = function(credentials) {
       null,
       credentials.private_key, 
       scopes
-    );
+    )
     var calendar = google.calendar({version: 'v3', auth})
 
     // request calendar events from google
@@ -63,21 +63,30 @@ module.exports = function(credentials) {
           this.emit('error', new PluginError(PLUGIN_NAME, 'The API returned an error: ' + err))
           return cb()
         }
-        const events = res.data.items;
+        const events = res.data.items
         if (events.length) {
+
           // Stream out the JSON event list to be used by additional GulpJS tasks.
           log.info('Stream events of calendar ' + cid)
 
-          // set default filename to the calendar id
-          var filename = cid + '.json'
-          var opts = {
-            // set a subfolder events
-            path: path.resolve('events', filename)
-          }
-          var file = new File(opts)
+          // set a subfolder "events" plus calendar id
+          var folder = 'events/' + cid
 
-          // finally stream the json
-          file.contents = new Buffer.from(JSON.stringify(events))
+          for (var i = 0; i < events.length; i++){
+            var event = events[i]
+            // set event file name to event id
+            var filename = event.id + '.json'
+            var opts = {
+              path: path.resolve(folder, filename)
+            }
+
+            var file = new File(opts)
+
+            // stream out the event as json file
+            file.contents = new Buffer.from(JSON.stringify(event))
+            this.push(file)
+          }
+
           return cb(null, file)
         } else {
           log.info('No upcoming events found for calendar ' + cid)
@@ -89,4 +98,4 @@ module.exports = function(credentials) {
   }
 
   return through.obj(get)
-};
+}
