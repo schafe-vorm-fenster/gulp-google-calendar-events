@@ -12,30 +12,26 @@ const {JWT} = require('google-auth-library')
 
 module.exports = function(credentials) {
 
-  if (!credentials || !credentials.private_key || !credentials.client_email) {
-    this.emit('error', new PluginError(PLUGIN_NAME, 'Missing credentials.'))
-    return cb()
-  }
-
   function get(file, enc, cb) {
 
     // set scope to rad calender events
     const scopes = ['https://www.googleapis.com/auth/calendar.readonly']
 
+    if (!credentials || !credentials.private_key || !credentials.client_email) {
+      return cb(new PluginError(PLUGIN_NAME, 'Missing credentials.'))
+    }
+
     if (file.isNull()) {
-      this.emit('error', new PluginError(PLUGIN_NAME, 'Missing calender information.'))
-      return cb()
+      return cb(new PluginError(PLUGIN_NAME, 'Missing calender information.'))
     }
 
     const cal = JSON.parse(file.contents.toString())
     if (!cal) {
-      this.emit('error', new PluginError(PLUGIN_NAME, 'Invalid calender information.'))
-      return cb()
+      return cb(new PluginError(PLUGIN_NAME, 'Invalid calender information.'))
     }
 
     if (!cal.id) {
-      this.emit('error', new PluginError(PLUGIN_NAME, 'Missing calender id as "id"-attribute in incoming JSON calendar information.'))
-      return cb()
+      return cb(new PluginError(PLUGIN_NAME, 'Missing calender id as "id"-attribute in incoming JSON calendar information.'))
     }
 
     // get the calendar id from incoming JSON file
@@ -60,8 +56,7 @@ module.exports = function(credentials) {
         orderBy: 'startTime',
       }, (err, res) => {
         if (err) {
-          this.emit('error', new PluginError(PLUGIN_NAME, 'The API returned an error: ' + err))
-          return cb()
+          return cb(new PluginError(PLUGIN_NAME, 'The API returned an error: ' + err))
         }
         const events = res.data.items
         if (events.length) {
