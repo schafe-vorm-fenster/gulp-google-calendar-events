@@ -48,9 +48,13 @@ module.exports = function(credentials) {
     var calendar = google.calendar({version: 'v3', auth})
 
     // request calendar events from google
+    var now = new Date()
+    var inThreeMonths = new Date(date.setMonth(date.getMonth()+3))
+
     calendar.events.list({
         calendarId: cid,
-        timeMin: (new Date()).toISOString(),
+        timeMin: now.toISOString(),
+        timeMax: inThreeMonths.toISOString(),
         maxResults: 100,
         singleEvents: true,
         orderBy: 'startTime',
