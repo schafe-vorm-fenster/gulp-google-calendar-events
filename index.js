@@ -49,7 +49,8 @@ module.exports = function(credentials) {
 
     // request calendar events from google
     var now = new Date()
-    var inThreeMonths = new Date(date.setMonth(date.getMonth()+3))
+    var inThreeMonths = new Date()
+    inThreeMonths.setMonth(inThreeMonths.getMonth()+3)
 
     calendar.events.list({
         calendarId: cid,

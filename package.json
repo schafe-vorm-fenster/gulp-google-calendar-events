@@ -1,6 +1,6 @@
 {
   "name": "gulp-google-calendar-events",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Gulp plugin to load upcoming google calendar events by using the service api.",
   "keywords": [
     "google",
