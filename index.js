@@ -51,7 +51,7 @@ module.exports = function(credentials) {
     calendar.events.list({
         calendarId: cid,
         timeMin: (new Date()).toISOString(),
-        maxResults: 10,
+        maxResults: 100,
         singleEvents: true,
         orderBy: 'startTime',
       }, (err, res) => {
