@@ -61,7 +61,8 @@ module.exports = function(credentials) {
         orderBy: 'startTime',
       }, (err, res) => {
         if (err) {
-          return cb(new PluginError(PLUGIN_NAME, 'The API returned an error: ' + err))
+          log.error('The API returned an error: ' + err + ', calendarId' + cid)
+          return cb()
         }
         const events = res.data.items
         if (events.length) {
